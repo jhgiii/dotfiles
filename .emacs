@@ -1,13 +1,19 @@
-(setenv "PATH" (concat (getenv "PATH") ":/Users/jim/workspace/bin"))
+
+(setenv "PATH" (concat (getenv "PATH") ":/Users/dt232719/workspace/bin"))
+
+
 ;; Define the init file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
 (when (file-exists-p custom-file)
   (load custom-file))
 
 ;; Define and initialise package repositories
+
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+
+
 ;;Set Exec PATH
 (defun set-exec-path-from-shell-PATH ()
   "Set up Emacs' `exec-path' and PATH environment variable to match
@@ -32,11 +38,8 @@ apps are not started from a shell."
 (require 'use-package)
 (setq use-package-always-ensure 't)
 
-;; Keyboard-centric user interface
+;; Disable Startup Menu
 (setq inhibit-startup-message t)
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
 
 ;; Theme
 (use-package light-soap-theme
@@ -90,7 +93,7 @@ apps are not started from a shell."
 
 
 ;;Font
-(set-frame-font "Monaco 14" nil t)
+(set-frame-font "Monaco 16" nil t)
 
 ;;Override SVG Errors
 ;; overriding image.el function image-type-available-p
@@ -108,3 +111,119 @@ Image types are symbols like `xbm' or `jpeg'."
 (require 'evil)
   (evil-mode 1)
 (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
+
+;;Start Treemacs by on Startup
+(add-hook 'emacs-startup-hook 'treemacs)
+
+;;Set Frame Size on Startup
+(if (window-system)
+    (set-frame-size (selected-frame) 256 60))
+
+;; Packages
+(setq python-shell-interpreter "ipython"
+      python-shell-interpreter-args "-i --simple-prompt")
+
+;; Org Stuff
+
+;; Screenshot Pasting
+(use-package org-download
+    :after org
+    :defer nil
+    :custom
+    (org-download-method 'directory)
+    (org-download-image-dir "images")
+    (org-download-heading-lvl nil)
+    (org-download-timestamp "%Y%m%d-%H%M%S_")
+    (org-image-actual-width 1200)
+    (org-download-screenshot-method "/usr/local/bin/pngpaste %s")
+    :bind
+    ("C-M-y" . org-download-screenshot)
+    :config
+    (require 'org-download))
+
+;;Toggle Indents
+(setq org-adapt-indentation t)
+(add-hook 'org-mode-hook 'org-indent-mode)
+
+;; increase header font size and weight
+(custom-set-faces
+  '(org-level-1 ((t (:height 1.3 :weight bold))))
+  '(org-level-2 ((t (:height 1.2 :weight bold))))
+  '(org-level-3 ((t (:height 1.1 :weight bold)))))
+
+;; hide asterisks in headers
+;;(use-package org-bullets
+;;  :ensure t
+;;  :config
+;;  (add-hook 'org-mode-hook (lambda () (org-bullets-mode 1)))
+;;  (setq org-bullets-bullet-list '("\u200b")))
+
+;; change list markers from hyphens to squares
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "▪"))))))
+
+;; increase line spacing
+(setq-default line-spacing 0.5)
+;; Org-temp for <s TAB insertion of code blocks
+(require 'org-tempo)
+
+;; org-agenda
+(setq org-agenda-files (list "~/org/tickets.org"
+                             "~/org/projects.org"
+			     "~/Projects/na-upgrade/na-upgrade.org"))
+
+
+;; org-agenda: shortcuts
+(require 'org)
+(define-key global-map "\C-cl" 'org-store-link)
+(define-key global-map "\C-ca" 'org-agenda)
+(setq org-log-done t)
+;;Popper
+(use-package popper
+  :ensure t ; or :straight t
+  :bind (("C-`"   . popper-toggle-latest)
+         ("M-`"   . popper-cycle)
+         ("C-M-`" . popper-toggle-type))
+  :init
+  (setq popper-reference-buffers
+        '("\\*Messages\\*"
+          "Output\\*$"
+          "\\*Async Shell Command\\*"
+	  "\\*Org Agenda\\*"
+          help-mode
+	  vterm-mode
+          compilation-mode))
+  (popper-mode +1)
+  (popper-echo-mode +1))                ; For echo area hints
+(setq popper-reference-buffers
+      (append popper-reference-buffers
+              '("^\\*eshell.*\\*$" eshell-mode ;eshell as a popup
+                "^\\*shell.*\\*$"  shell-mode  ;shell as a popup
+                "^\\*term.*\\*$"   term-mode   ;term as a popup
+                "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
+                )))
+
+;; Treesitter Crap
+(use-package treesit-auto
+  :config
+  (global-treesit-auto-mode))
+(setq treesit-language-source-alist
+ '((bash "https://github.com/tree-sitter/tree-sitter-bash")
+   (cmake "https://github.com/uyha/tree-sitter-cmake")
+   (css "https://github.com/tree-sitter/tree-sitter-css")
+   (elisp "https://github.com/Wilfred/tree-sitter-elisp")
+   (go "https://github.com/tree-sitter/tree-sitter-go")
+   (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
+   (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
+   (html "https://github.com/tree-sitter/tree-sitter-html")
+   (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
+   (json "https://github.com/tree-sitter/tree-sitter-json")
+   (make "https://github.com/alemuller/tree-sitter-make")
+   (markdown "https://github.com/ikatyang/tree-sitter-markdown")
+   (python "https://github.com/tree-sitter/tree-sitter-python")
+   (toml "https://github.com/tree-sitter/tree-sitter-toml")
+   (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
+   (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
+   (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
+
