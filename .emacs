@@ -1,6 +1,45 @@
-
+(when (equal system-type 'darwin)
+  (setq insert-directory-program "/usr/local/opt/coreutils/libexec/gnubin/ls"))
 (setenv "PATH" (concat (getenv "PATH") ":/Users/dt232719/workspace/bin"))
 
+
+
+;; ivy
+
+(ivy-mode)
+(setq ivy-use-virtual-buffers t)
+(setq enable-recursive-minibuffers t)
+;; enable this if you want `swiper' to use it
+;; (setq search-default-mode #'char-fold-to-regexp)
+(global-set-key "\C-s" 'swiper)
+(global-set-key (kbd "C-c C-r") 'ivy-resume)
+(global-set-key (kbd "<f6>") 'ivy-resume)
+(global-set-key (kbd "M-x") 'counsel-M-x)
+(global-set-key (kbd "C-x C-f") 'counsel-find-file)
+(global-set-key (kbd "<f1> f") 'counsel-describe-function)
+(global-set-key (kbd "<f1> v") 'counsel-describe-variable)
+(global-set-key (kbd "<f1> o") 'counsel-describe-symbol)
+(global-set-key (kbd "<f1> l") 'counsel-find-library)
+(global-set-key (kbd "<f2> i") 'counsel-info-lookup-symbol)
+(global-set-key (kbd "<f2> u") 'counsel-unicode-char)
+(global-set-key (kbd "C-c g") 'magit-status)
+(global-set-key (kbd "C-x l") 'counsel-locate)
+(global-set-key (kbd "C-S-o") 'counsel-rhythmbox)
+(define-key minibuffer-local-map (kbd "C-r") 'counsel-minibuffer-history)
+
+
+(require 'ivy-posframe)
+;; Different command can use different display function.
+(setq ivy-posframe-height-alist '((swiper . 10)
+                                  (t      . 10)))
+
+(setq ivy-posframe-display-functions-alist
+      '((swiper          . ivy-display-function-fallback)
+        (complete-symbol . ivy-posframe-display-at-point)
+        (counsel-M-x     . ivy-posframe-display-at-window-bottom-left)
+	(magit-status    .  ivy-posgrame-display-at-frame-center)
+        (t               . ivy-posframe-display)))
+(ivy-posframe-mode 1)
 
 ;; Define the init file
 (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
@@ -12,6 +51,11 @@
 (require 'package)
 (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
 (package-initialize)
+
+;; Archives from which to fetch.
+(setq package-archives
+      (append '(("melpa" . "http://melpa.org/packages/"))
+              package-archives))
 
 
 ;;Set Exec PATH
@@ -42,8 +86,8 @@ apps are not started from a shell."
 (setq inhibit-startup-message t)
 
 ;; Theme
-(use-package light-soap-theme
-  :config (load-theme 'light-soap t))
+;;(use-package toleuven-theme
+;;  :config (load-theme 'leuven-theme t))
 
 ;; Open dired in same buffer
 (put 'dired-find-alternate-file 'disabled nil)
@@ -78,12 +122,10 @@ apps are not started from a shell."
 (use-package lsp-mode
   :ensure t
   :commands (lsp lsp-mode lsp-deferred)
-  :hook ((rust-mode python-mode go-mode) . lsp-deferred)
+  :hook ((python-mode go-mode) . lsp-deferred)
   :config
-  (setq lsp-prefer-flymake nil
-        lsp-enable-indentation nil
-        lsp-enable-on-type-formatting nil
-        lsp-rust-server 'rust-analyzer)
+  (setq lsp-enable-indentation nil
+        lsp-enable-on-type-formatting nil)
   ;; for filling args placeholders upon function completion candidate selection
   ;; lsp-enable-snippet and company-lsp-enable-snippet should be nil with
   ;; yas-minor-mode is enabled: https://emacs.stackexchange.com/q/53104
@@ -93,7 +135,7 @@ apps are not started from a shell."
 
 
 ;;Font
-(set-frame-font "Monaco 16" nil t)
+(set-frame-font "Source Code Pro 18")
 
 ;;Override SVG Errors
 ;; overriding image.el function image-type-available-p
@@ -111,7 +153,7 @@ Image types are symbols like `xbm' or `jpeg'."
 (require 'evil)
   (evil-mode 1)
 (evil-define-key 'normal org-mode-map (kbd "<tab>") #'org-cycle)
-
+(add-hook 'vterm-mode-hook 'evil-emacs-state)
 ;;Start Treemacs by on Startup
 (add-hook 'emacs-startup-hook 'treemacs)
 
@@ -124,7 +166,8 @@ Image types are symbols like `xbm' or `jpeg'."
       python-shell-interpreter-args "-i --simple-prompt")
 
 ;; Org Stuff
-
+;; Ascii Line Wrapping on Export
+(setq org-ascii-text-width 250)
 ;; Screenshot Pasting
 (use-package org-download
     :after org
@@ -146,10 +189,10 @@ Image types are symbols like `xbm' or `jpeg'."
 (add-hook 'org-mode-hook 'org-indent-mode)
 
 ;; increase header font size and weight
-(custom-set-faces
-  '(org-level-1 ((t (:height 1.3 :weight bold))))
-  '(org-level-2 ((t (:height 1.2 :weight bold))))
-  '(org-level-3 ((t (:height 1.1 :weight bold)))))
+;; (custom-set-faces
+;;   '(org-level-1 ((t (:height 1.3 :weight bold))))
+;;   '(org-level-2 ((t (:height 1.2 :weight bold))))
+;;  '(org-level-3 ((t (:height 1.1 :weight bold)))))
 
 ;; hide asterisks in headers
 ;;(use-package org-bullets
@@ -171,7 +214,9 @@ Image types are symbols like `xbm' or `jpeg'."
 ;; org-agenda
 (setq org-agenda-files (list "~/org/tickets.org"
                              "~/org/projects.org"
-			     "~/Projects/na-upgrade/na-upgrade.org"))
+			     "~/Projects/na-upgrade/na-upgrade.org"
+			     "~/personal.org"))
+
 
 
 ;; org-agenda: shortcuts
@@ -204,26 +249,9 @@ Image types are symbols like `xbm' or `jpeg'."
                 "^\\*vterm.*\\*$"  vterm-mode  ;vterm as a popup
                 )))
 
-;; Treesitter Crap
-(use-package treesit-auto
-  :config
-  (global-treesit-auto-mode))
-(setq treesit-language-source-alist
- '((bash "https://github.com/tree-sitter/tree-sitter-bash")
-   (cmake "https://github.com/uyha/tree-sitter-cmake")
-   (css "https://github.com/tree-sitter/tree-sitter-css")
-   (elisp "https://github.com/Wilfred/tree-sitter-elisp")
-   (go "https://github.com/tree-sitter/tree-sitter-go")
-   (gomod "https://github.com/camdencheek/tree-sitter-go-mod")
-   (dockerfile "https://github.com/camdencheek/tree-sitter-dockerfile")
-   (html "https://github.com/tree-sitter/tree-sitter-html")
-   (javascript "https://github.com/tree-sitter/tree-sitter-javascript" "master" "src")
-   (json "https://github.com/tree-sitter/tree-sitter-json")
-   (make "https://github.com/alemuller/tree-sitter-make")
-   (markdown "https://github.com/ikatyang/tree-sitter-markdown")
-   (python "https://github.com/tree-sitter/tree-sitter-python")
-   (toml "https://github.com/tree-sitter/tree-sitter-toml")
-   (tsx "https://github.com/tree-sitter/tree-sitter-typescript" "master" "tsx/src")
-   (typescript "https://github.com/tree-sitter/tree-sitter-typescript" "master" "typescript/src")
-   (yaml "https://github.com/ikatyang/tree-sitter-yaml")))
-
+;; Markdown
+(use-package markdown-mode
+  :ensure t
+  :commands (markdown-mode gfm-mode)
+  :mode (("README\\.md\\'" . gfm-mode))
+  :init (setq markdown-command "/usr/local/bin/multimarkdown"))
