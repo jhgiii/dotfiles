@@ -3,7 +3,6 @@
 (require 'company)
 (company-mode 1)
 
-(add-to-list 'major-mode-remap-alist '(go-mode . go-ts-mode))
 
 (require 'yasnippet)
 (yas-global-mode 1)
@@ -15,5 +14,5 @@
   (make-local-variable 'compile-command)
   (setq compile-command "go run .")
   (define-key go-run (kbd "C-c C-c") #'compile))
-(add-hook 'go-ts-mode-hook (lambda () (define-key go-ts-mode-map (kbd "C-c C-c") 'go-run)))
-(add-hook 'go-ts-mode-hook #'go-run)
+(add-hook 'go-mode-hook (lambda () (define-key go-mode-map (kbd "C-c C-c") 'go-run)))
+(add-hook 'gomode-hook #'go-run)

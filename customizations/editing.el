@@ -68,14 +68,6 @@
 
 (setq electric-indent-mode nil)
 
-;; Treesitter
-(setq treesit-language-source-alist
-      '((go "https://github.com/tree-sitter/tree-sitter-go")
-        (python "https://github.com/tree-sitter/tree-sitter-python")
-        (yaml "https://github.com/ikatyang/tree-sitter-yaml")
-        (json "https://github.com/tree-sitter/tree-sitter-json")
-        (gomod "https://github.com/camdencheek/tree-sitter-go-mod")))
-
 ;; Yafolding -- Code Folding
-(add-hook 'prog-mode-hook
-          (lambda () (yafolding-mode)))
+;;(add-hook 'prog-mode-hook
+  ;;        (lambda () (yafolding-mode)))

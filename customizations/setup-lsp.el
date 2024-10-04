@@ -11,13 +11,13 @@
 (require 'company)
 (require 'yasnippet)
 
-(require 'go-ts-mode)
+(require 'go-mode)
 (require 'eglot)
-(add-hook 'go-ts-mode-hook 'eglot-ensure)
+(add-hook 'go-mode-hook 'eglot-ensure)
 
 (defun eglot-format-buffer-on-save ()
   (add-hook 'before-save-hook #'eglot-format-buffer -10 t))
-(add-hook 'go-ts-mode-hook #'eglot-format-buffer-on-save)
+(add-hook 'gomode-hook #'eglot-format-buffer-on-save)
 
 ;;gopls customization
 (setq-default eglot-workspace-configuration

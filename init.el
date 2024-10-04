@@ -84,6 +84,7 @@
     company
     ;; yasnippets
     yasnippet
+   
     ))
 
 ;; On OS X, an Emacs instance started from the graphical user
