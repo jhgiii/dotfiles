@@ -43,7 +43,7 @@
                                                "backups"))))
 (setq auto-save-default nil)
 
-
+                                                         
 ;; comments
 (defun toggle-comment-on-line ()
   "comment or uncomment current line"
@@ -68,6 +68,21 @@
 
 (setq electric-indent-mode nil)
 
-;; Yafolding -- Code Folding
-;;(add-hook 'prog-mode-hook
-  ;;        (lambda () (yafolding-mode)))
+
+;;Duplicates a line 
+(defun duplicate-line()
+  (interactive)
+  (move-beginning-of-line 1)
+  (kill-line)
+  (yank)
+  (open-line 1)
+  (next-line 1)
+  (yank))
+
+(global-set-key (kbd "C-c C-d") 'duplicate-line)
+(global-set-key (kbd "C-c C-r r") 'query-replace-regexp)
+(global-set-key (kbd "C-c C-r b") 'regexp-builder)
+
+;;Auto-Close parens/brackets/etc
+(electric-pair-mode 't)
+

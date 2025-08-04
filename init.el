@@ -1,4 +1,3 @@
-;;;;
 ;; Packages
 ;;;;
 
@@ -151,19 +150,35 @@
 (load "setup-clojure.el")
 (load "setup-js.el")
 (load "setup-lsp.el")
-;; Evil Configuration
-(load "setup-evil.el")
+
 ;; Org-Mode Configuration
 (load "setup-orgmode.el")
+(load "ox-jira.el")
+;;eshell
+(load "setup-eshell.el")
 (custom-set-variables
  ;; custom-set-variables was added by Custom.
  ;; If you edit it by hand, you could mess it up, so be careful.
  ;; Your init file should contain only one such instance.
  ;; If there is more than one, they won't work right.
  '(coffee-tab-width 2)
- '(package-selected-packages
-   '(org-babel-eval-in-repl babel graphviz-dot-mode org-download yaml-pro evil-smartparens yafolding fold-this paredit-everywhere evil flycheck company-ycmd lsp-mode archive-downloader magit tagedit rainbow-delimiters projectile smex ido-completing-read+ cider clojure-mode-extra-font-locking clojure-mode paredit exec-path-from-shell))
- '(warning-suppress-log-types '((comp))))
+ '(custom-safe-themes
+   '("8899e88d19a37d39c7187f4bcb5bb596fba990728ef963420b93e2aea5d1666a"
+     "3aa51468052c1e3e21dd41a3fa40c0161e07ca600683e3d96f1bca70f36749e2"
+     default))
+ '(org-agenda-files
+   '("~/org/meetings/10-07-2025.org" "/Users/DT232719/org/tasks.org"
+     "/Users/DT232719/org/inbox.org"
+     "/Users/DT232719/org/meetings.org"
+     "/Users/DT232719/org/notes.org"
+     "/Users/DT232719/org/projects.org"
+     "/Users/DT232719/org/someday.org"))
+ '(org-export-backends
+   '(ascii beamer html icalendar latex man md odt org texinfo confluence
+           deck freemind groff koma-letter rss s5 taskjuggler))
+ '(package-selected-packages nil)
+ '(warning-suppress-log-types '((emacs) (comp)))
+ '(warning-suppress-types '((native-compiler))))
 
 (custom-set-faces
  ;; custom-set-faces was added by Custom.
@@ -175,5 +190,3 @@
 ;;Company mode globally
 (global-company-mode 1)
 
-;;Hotkey for Compile Command
-(global-set-key (kbd "C-c C-c") 'compile)

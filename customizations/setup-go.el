@@ -1,7 +1,7 @@
 ;;Go Language-specific configuraiton
 
 (require 'company)
-(company-mode 1)
+v(company-mode 1)
 
 
 (require 'yasnippet)

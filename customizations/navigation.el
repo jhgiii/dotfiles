@@ -1,5 +1,59 @@
-;; These customizations make it easier for you to navigate files,
-;; switch buffers, and choose options from the minibuffer.
+(use-package vertico
+  :ensure t
+  :init
+  (vertico-mode))
+
+(use-package vertico-posframe
+  :after vertico
+  :ensure t
+  :custom
+  (vertico-posframe-parameters
+   '((left-fringe . 8)
+     (right-fringe . 8)))
+  (vertico-posframe-poshandler #'posframe-poshandler-frame-center)
+  :config
+  (vertico-posframe-mode 1))
+
+
+(use-package orderless
+  :ensure t
+  :custom
+  (completion-styles '(orderless))
+  (completion-category-defaults nil)
+  (completion-category-overrides '((file (styles partial-completion)))))
+
+(use-package marginalia
+  :ensure t
+  :init
+  (marginalia-mode))
+
+(use-package consult
+  :ensure t
+  :bind
+  (("C-s" . consult-line)                ;; Search in current buffer
+   ("M-g g" . consult-goto-line)         ;; Go to line
+   ("C-x b" . consult-buffer)            ;; Switch buffer
+   ("C-c r" . consult-org-heading)       ;; Jump to org headings
+   ("C-c f" . consult-find)              ;; Find file
+   ("C-c g" . consult-ripgrep)           ;; Grep-like search
+   ("M-y" . consult-yank-pop)))          ;; View kill ring
+
+(use-package embark
+  :ensure t
+  :bind
+  (("C-." . embark-act)            ;; pick an action
+   ("C-h B" . embark-bindings))    ;; describe keybindings
+  :init
+  (setq prefix-help-command #'embark-prefix-help-command))
+
+(use-package embark-consult
+  :after (embark consult)
+  :ensure t
+  :hook
+  (embark-collect-mode . consult-preview-at-point-mode))
+
+(setq completion-cycle-threshold 3)
+(setq tab-always-indent 'complete)
 
 
 ;; "When several buffers visit identically-named files,
@@ -18,37 +72,6 @@
 (require 'recentf)
 (recentf-mode 1)
 (setq recentf-max-menu-items 40)
-
-
-;; ido-mode allows you to more easily navigate choices. For example,
-;; when you want to switch buffers, ido presents you with a list
-;; of buffers in the the mini-buffer. As you start to type a buffer's
-;; name, ido will narrow down the list of buffers to match the text
-;; you've typed in
-;; http://www.emacswiki.org/emacs/InteractivelyDoThings
-(ido-mode t)
-
-;; This allows partial matches, e.g. "tl" will match "Tyrion Lannister"
-(setq ido-enable-flex-matching t)
-
-;; Turn this behavior off because it's annoying
-(setq ido-use-filename-at-point nil)
-
-;; Don't try to match file across all "work" directories; only match files
-;; in the current directory displayed in the minibuffer
-(setq ido-auto-merge-work-directories-length -1)
-
-;; Includes buffer names of recently open files, even if they're not
-;; open now
-(setq ido-use-virtual-buffers t)
-
-;; This enables ido in all contexts where it could be useful, not just
-;; for selecting buffer and file names
-(ido-ubiquitous-mode t)
-(ido-everywhere t)
-
-;; Shows a list of buffers
-(global-set-key (kbd "C-x C-b") 'ibuffer)
 
 
 ;; Enhances M-x to allow easier execution of commands. Provides
